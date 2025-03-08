@@ -8,13 +8,13 @@ from models import User, UserPublic, UserUpdate, UserCreate
 
 app = FastAPI()
 
-SQLModel.metadata.create_all(engine)
+# SQLModel.metadata.create_all(engine)
 
-SessionDep = Annotated[Session, Depends(get_session)]
+# SessionDep = Annotated[Session, Depends(get_session)]
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+# @app.on_event("startup")
+# def on_startup():
+#     create_db_and_tables()
 
 
 # Crud operation
@@ -55,41 +55,44 @@ def on_startup():
 
 # ======= Multiple model =========
 
-@app.post("/user/", response_model=UserPublic)
-def create_user(user: UserCreate, session: SessionDep): # type: ignore
-    db_user = User.model_validate(user)
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return db_user
+# @app.post("/user/", response_model=UserPublic)
+# def create_user(user: UserCreate, session: SessionDep): # type: ignore
+#     db_user = User.model_validate(user)
+#     session.add(db_user)
+#     session.commit()
+#     session.refresh(db_user)
+#     return db_user
 
 
-@app.get("/users/", response_model=list[UserPublic])
-def read_users(
-    session: SessionDep, # type: ignore
-    offset: int = 0,
-    limit: Annotated[int, Query(le=100)] = 100,
-):
-    users = session.exec(select(User).offset(offset).limit(limit)).all()
-    return users
+# @app.get("/users/", response_model=list[UserPublic])
+# def read_users(
+#     session: SessionDep, # type: ignore
+#     offset: int = 0,
+#     limit: Annotated[int, Query(le=100)] = 100,
+# ):
+#     users = session.exec(select(User).offset(offset).limit(limit)).all()
+#     return users
 
 
-@app.get("/users/{user_id}", response_model=UserPublic)
-def read_users(user_id: int, session: SessionDep): # type: ignore
-    user = session.get(User, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+# @app.get("/users/{user_id}", response_model=UserPublic)
+# def read_users(user_id: int, session: SessionDep): # type: ignore
+#     user = session.get(User, user_id)
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return user
 
 
-@app.patch("/users/{user_id}", response_model=UserPublic)
-def update_user(user_id: int, user: UserUpdate, session: SessionDep): # type: ignore
-    user_db = session.get(User, user_id)
-    if not user_db:
-        raise HTTPException(status_code=404, detail="User not found")
-    user_data = user.model_dump(exclude_unset=True)
-    user_db.sqlmodel_update(user_data)
-    session.add(user_db)
-    session.commit()
-    session.refresh(user_db)
-    return user_db
+# @app.patch("/users/{user_id}", response_model=UserPublic)
+# def update_user(user_id: int, user: UserUpdate, session: SessionDep): # type: ignore
+#     user_db = session.get(User, user_id)
+#     if not user_db:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     user_data = user.model_dump(exclude_unset=True)
+#     user_db.sqlmodel_update(user_data)
+#     session.add(user_db)
+#     session.commit()
+#     session.refresh(user_db)
+#     return user_db
+
+
+
