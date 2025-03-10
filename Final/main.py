@@ -8,13 +8,13 @@ from models import User, UserPublic, UserUpdate, UserCreate
 
 app = FastAPI()
 
-# SQLModel.metadata.create_all(engine)
+SQLModel.metadata.create_all(engine)
 
-# SessionDep = Annotated[Session, Depends(get_session)]
+SessionDep = Annotated[Session, Depends(get_session)]
 
-# @app.on_event("startup")
-# def on_startup():
-#     create_db_and_tables()
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 
 # Crud operation
