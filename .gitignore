@@ -4,3 +4,8 @@
 **/env
 .env
 **/.env
+
+final/my_env
+starter/venv
+final/*_env
+starter/*env
