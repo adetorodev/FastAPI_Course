@@ -26,32 +26,32 @@ def on_startup():
 #     return user
 
 
-# @app.get("/users/")
-# def read_users(
-#     session: SessionDep, # type: ignore
-#     offset: int = 0,
-#     limit: Annotated[int, Query(le=100)] = 100,
-# ) -> list[User]:
-#     users = session.exec(select(User).offset(offset).limit(limit)).all()
-#     return users
+@app.get("/users/")
+def read_users(
+    session: SessionDep, # type: ignore
+    offset: int = 0,
+    limit: Annotated[int, Query(le=100)] = 100,
+) -> list[User]:
+    users = session.exec(select(User).offset(offset).limit(limit)).all()
+    return users
 
 
-# @app.get("/users/{user_id}")
-# def read_user(user_id: int, session: SessionDep) -> "User": # type: ignore
-#     user = session.get(User, user_id)
-#     if not user:
-#         raise HTTPException(status_code=404, detail="user not found")
-#     return user
+@app.get("/users/{user_id}")
+def read_user(user_id: int, session: SessionDep) -> "User": # type: ignore
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="user not found")
+    return user
 
 
-# @app.delete("/users/{user_id}")
-# def delete_user(user_id: int, session: SessionDep): # type: ignore
-#     user = session.get(User, user_id)
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     session.delete(user)
-#     session.commit()
-#     return {"ok": True}
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int, session: SessionDep): # type: ignore
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    session.delete(user)
+    session.commit()
+    return {"ok": True}
 
 # ======= Multiple model =========
 

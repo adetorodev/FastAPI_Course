@@ -34,3 +34,6 @@ watchfiles==1.0.4
 websockets==14.2
 
 sqlmodel
+
+pymongo
+motor
