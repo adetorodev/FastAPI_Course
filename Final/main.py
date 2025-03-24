@@ -1,20 +1,21 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Session, SQLModel, select
+from Final.lifespan import create_start_app_handler
 from database import engine
 from depedency import get_session, create_db_and_tables
 from models import User, UserPublic, UserUpdate, UserCreate
 
 
-app = FastAPI()
+app = FastAPI(lifespan=create_start_app_handler)
 
 SQLModel.metadata.create_all(engine)
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+# @app.on_event("startup")
+# def on_startup():
+#     create_db_and_tables()
 
 
 # Crud operation

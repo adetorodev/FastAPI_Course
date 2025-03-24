@@ -7,7 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 # import for fast api lifespan
 from contextlib import asynccontextmanager
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -73,17 +73,34 @@ async def read_user_by_email(email_address: str):
 # Update user
 
 class UpdateUserDTO(BaseModel):
-    other_names: List[str] = None
-    age: int = None
-    # Include other fields as needed, with defaults to None or use the exclude_unset=True option
+    other_names: Optional[List[str]] = None
+    age: Optional[int] = None
+    # first_name: Optional[str] = None
+    # last_name: Optional[str] = None
+    # middle_name: Optional[str] = None
+    # phone_number: Optional[str] = None
+
+    class Config:
+        extra = "forbid"
 
 @app.put("/api/v1/update-user/{email_address}", response_model=User)
 async def update_user(email_address: str, user_update: UpdateUserDTO):
+    update_data = user_update.model_dump(exclude_unset=True)  # Only update provided fields
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No valid fields to update")
+
     updated_result = await app.mongodb["users"].update_one(
-        {"email_address": email_address}, {"$set": user_update.model_dump(exclude_unset=True)})
+        {"email_address": email_address}, {"$set": update_data}
+    )
+
     if updated_result.modified_count == 0:
         raise HTTPException(status_code=404, detail="User not found or no update needed")
-    updated_user = await app.mongodb["users"].find_one({"email_address": email_address})
+
+    updated_user = await app.mongodb["users"].find_one({"email_address": email_address}, {"_id": 0})
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return updated_user
 
 # D <=== Delete
