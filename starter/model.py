@@ -1,28 +1,24 @@
+from typing import Optional, List
+from pydantic import BaseModel
+from enum import Enum
 
-from typing import Optional, List # Supports for type hints
-from pydantic import BaseModel # Most widely used data validation library for python
-from enum import Enum # Supports for enumerations
-
-# enum for gender
 class Gender(str, Enum):
-    male = "male"
+    male = "male",
     female = "female"
 
-# enum for role
 class Role(str, Enum):
-    admin = "admin"
-    user = "user"
-    student = "student"
-    teacher = "teacher"
+    admin = "admin",
+    student = "student",
+    teacher = "teacher",
 
 class User(BaseModel):
     first_name: str
     last_name: str
-    middle_name: Optional[str] = None  # Make middle name optional
     gender: Gender
     email_address: str
-    phone_number: str
-    roles: List[Role] # user can have several roles
-    # new data Added to match DB updates
-    other_names: Optional[List[str]] = None
-    age: Optional[int] = None
+    roles: List[Role]
+
+class UpdateUser(BaseModel):
+    first_name: str
+    last_name: str
+    gender: Gender

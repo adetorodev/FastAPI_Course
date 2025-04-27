@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 # method for start the MongoDb Connection
 async def startup_db_client(app):
     app.mongodb_client = AsyncIOMotorClient(
-        "mongodb+srv://UserName:Password@cluster0.abc.mongodb.net/")
+        "mongodb://localhost:27017/")
     app.mongodb = app.mongodb_client.get_database("college")
     print("MongoDB connected.")
 
@@ -90,3 +90,36 @@ async def delete_user_by_email(email_address: str):
     if delete_result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted successfully"}
+
+
+
+class UpdateUserDTO(BaseModel):
+    other_names: List[str] = None
+    age: int = None
+    first_name: str = None
+    last_name: str = None
+    middle_name: Optional[str] = None
+
+@app.put("/user/{email_address}", response_model=User)
+async def update_user(email_address: str, user_update: UpdateUserDTO):
+    updated_result = await app.mongodb["users"].update_one(
+        {"email_address": email_address},
+        {
+            "$set": user_update.model_dump(exclude_unset=True)
+        }
+    )
+    if updated_result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    updated_user = await app.mongodb["users"].find_one({"email_address": email_address})
+    return updated_user
+
+@app.delete("/user/{email_address}", response_model=dict)
+async def delete_user(email_address: str):
+    deleted_result = await app.mongodb["users"].delete_one(
+        {"email_address": email_address},
+
+    )
+    if deleted_result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    updated_user = await app.mongodb["users"].find_one({"email_address": email_address})
+    return {"message": "user Deleted successfully"}
